@@ -1,7 +1,7 @@
 
 var blackOrWhite = true; //если true - ходят белые, иначе черные
 isFigureSelected = false; // выбрана ли фигура
-var figureSelected = null;
+var figureSelected = null; // тест
 
 //pawn - пешка
 //rook - ладья
