@@ -85,7 +85,6 @@ var proverka = function(x,y, itemColor, color){                     //проверяет 
 
 var pawnStep = function(x, y, color){     //формирует и возвращает массив возможных ходов пешки
 	var possibleStep = [];                //сам массив
-	var flag = false;                     //нужен для определения, когда нужно подсвечивать фигуры для поедания
 
 	if (color == "black") {
 	
@@ -94,7 +93,6 @@ var pawnStep = function(x, y, color){     //формирует и возвращает массив возмож
 		
 		if (currentPosition[(y + 1)*8+x+1]["item"] != undefined &&  itemColor != color && (x+1) < 8) { //проверяется правая диагональ, свободна ли
 			possibleStep.push({"x": x + 1, "y": (y + 1) });
-			flag = true;
 		}
 		
 		item = k(x-1, y+1);
@@ -102,7 +100,6 @@ var pawnStep = function(x, y, color){     //формирует и возвращает массив возмож
 		
 		if (currentPosition[(y + 1)*8+x-1]["item"] != undefined &&  itemColor != color && (x-1)>=0) { //проверяется левая диагональ, свободна ли
 			possibleStep.push({"x": x - 1, "y": (y + 1) });
-			flag = true;
 		}
 		
 		item = k(x, y+1);
@@ -110,16 +107,14 @@ var pawnStep = function(x, y, color){     //формирует и возвращает массив возмож
 		
 		if (currentPosition[(y + 1)*8+x]["item"] != undefined &&  itemColor != color) { //проверяется клетка перед пешкой, свободна ли
 			possibleStep.push({"x": x, "y": (y + 1) });
-			flag = true;
 		} 
 		
-		if (!flag) {                                                      //если пред пешкой пусто(в том числе диагонали), т.е. флаг не был поднят
-			if (currentPosition[y*8 + x]["first"]) {                      //Если первый ход, то можно сходить через клетку
-				possibleStep.push({"x": x, "y": (y + 1) });
-				possibleStep.push({"x": x, "y": (y + 2) });
-			} else {
-				possibleStep.push({"x": x, "y": (y + 1) });
-			}
+		// добавление варианта простого хода вперед
+		if (currentPosition[y*8 + x]["first"]) {                      //Если первый ход, то можно сходить через клетку
+			possibleStep.push({"x": x, "y": (y + 1) });
+			possibleStep.push({"x": x, "y": (y + 2) });
+		} else {
+			possibleStep.push({"x": x, "y": (y + 1) });
 		}
 	} else {
 	
@@ -128,7 +123,6 @@ var pawnStep = function(x, y, color){     //формирует и возвращает массив возмож
 		
 		if (currentPosition[(y - 1)*8+x+1]["item"] != undefined &&  itemColor != color && (x+1)<8) {
 			possibleStep.push({"x": x + 1, "y": (y - 1) });
-			flag = true;
 		}
 		
 		item = k(x-1, y-1);
@@ -136,7 +130,6 @@ var pawnStep = function(x, y, color){     //формирует и возвращает массив возмож
 		
 		if (currentPosition[(y - 1)*8+x-1]["item"] != undefined &&  itemColor != color && (x-1)>=0) {
 			possibleStep.push({"x": x - 1, "y": (y - 1) });
-			flag = true;
 		} 
 		
 		item = k(x, y-1);
@@ -144,16 +137,13 @@ var pawnStep = function(x, y, color){     //формирует и возвращает массив возмож
 		
 		if (currentPosition[(y - 1)*8+x]["item"] != undefined &&  itemColor != color) {
 			possibleStep.push({"x": x, "y": (y - 1) });
-			flag = true;
 		} 
 		
-		if (!flag) {
-			if (currentPosition[y*8 + x]["first"]) {
-				possibleStep.push({"x": x, "y": (y - 1) });
-				possibleStep.push({"x": x, "y": (y - 2) });
-			} else {
-				possibleStep.push({"x": x, "y": (y - 1) });
-			}
+		if (currentPosition[y*8 + x]["first"]) {
+			possibleStep.push({"x": x, "y": (y - 1) });
+			possibleStep.push({"x": x, "y": (y - 2) });
+		} else {
+			possibleStep.push({"x": x, "y": (y - 1) });
 		}
 	}
 
@@ -168,14 +158,11 @@ var knightStep = function(x, y, color){
 	{"x": (x - 2), "y": (y + 1) }, {"x": (x - 2), "y": (y - 1) }, 
 	{"x": (x + 2), "y": (y + 1) }, {"x": (x + 2), "y": (y - 1) }];
 	
-	var flag = false;
-	
 	var item = k(x+1, y-2);
 	var itemColor = $(item).children().attr("color"); 
 	
 	if ((x+1) < 8 && (y-2) >= 0 && currentPosition[(y - 2)*8+x+1]["item"] != undefined &&  itemColor != color) { 
 		possibleStep.push({"x": (x + 1), "y": (y - 2) });
-		flag = true;
 	}
 	
 	item = k(x-1, y-2);
@@ -183,7 +170,6 @@ var knightStep = function(x, y, color){
 	
 	if ((x-1) >= 0 && (y-2) >= 0 && currentPosition[(y - 2)*8+x-1]["item"] != undefined &&  itemColor != color) { 
 		possibleStep.push({"x": (x - 1), "y": (y - 2) });
-		flag = true;
 	}
 	
 	item = k(x+1, y+2);
@@ -191,7 +177,6 @@ var knightStep = function(x, y, color){
 	
 	if ((x+1) < 8 && (y+2) < 8 && currentPosition[(y + 2)*8+x+1]["item"] != undefined &&  itemColor != color) { 
 		possibleStep.push({"x": (x + 1), "y": (y + 2) });
-		flag = true;
 	} 
 	
 	item = k(x-1, y+2);
@@ -199,7 +184,6 @@ var knightStep = function(x, y, color){
 	
 	if ((x-1) >= 0 && (y+2) < 8 && currentPosition[(y + 2)*8+x-1]["item"] != undefined &&  itemColor != color) { 
 		possibleStep.push({"x": (x - 1), "y": (y + 2) });
-		flag = true;
 	}
 	
 	item = k(x-2, y-1);
@@ -207,7 +191,6 @@ var knightStep = function(x, y, color){
 	
 	if ((x-2) >= 0 && (y-1) >= 0 && currentPosition[(y - 1)*8+x-2]["item"] != undefined &&  itemColor != color) { 
 		possibleStep.push({"x": (x - 2), "y": (y - 1) });
-		flag = true;
 	}
 	
 	item = k(x-2, y+1);
@@ -215,7 +198,6 @@ var knightStep = function(x, y, color){
 	
 	if ((x-2)>=0 && (y+1) < 8 && currentPosition[(y + 1)*8+x-2]["item"] != undefined &&  itemColor != color) { 
 		possibleStep.push({"x": (x - 2), "y": (y + 1) });
-		flag = true;
 	}
 	
 	item = k(x+2, y-1);
@@ -223,7 +205,6 @@ var knightStep = function(x, y, color){
 	
 	if ((x+2) < 8 && (y-1) >= 0 && currentPosition[(y - 1)*8+x+2]["item"] != undefined &&  itemColor != color) { 
 		possibleStep.push({"x": (x + 2), "y": (y - 1) });
-		flag = true;
 	}
 	
 	item = k(x+2, y+1);
@@ -231,17 +212,14 @@ var knightStep = function(x, y, color){
 	
 	if ((x+2)>=0 && (y+1) < 8 && currentPosition[(y + 1)*8+x+2]["item"] != undefined &&  itemColor != color) { 
 		possibleStep.push({"x": (x + 2), "y": (y + 1) });
-		flag = true;
 	}
 		
-	if (!flag) {
-		for (var i = 0; i < 8; i++)
+	for (var i = 0; i < 8; i++)
+	{
+		item = k(array[i]["x"], array[i]["y"]);
+		if( proverka(array[i]["x"], array[i]["y"], $(item).children().attr("color"), color))
 		{
-			item = k(array[i]["x"], array[i]["y"]);
-			if( proverka(array[i]["x"], array[i]["y"], $(item).children().attr("color"), color))
-			{
-				possibleStep.push({"x": array[i]["x"], "y": array[i]["y"]});
-			}
+			possibleStep.push({"x": array[i]["x"], "y": array[i]["y"]});
 		}
 	}
 	return possibleStep;
