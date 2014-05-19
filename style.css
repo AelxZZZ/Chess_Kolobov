@@ -4,3 +4,10 @@
 .possible-step{
 	border: 4px solid blue;
 }
+.cell{
+	margin: 0;
+	padding: 0;
+}
+#table-chess{
+	table-layout: fixed;
+}

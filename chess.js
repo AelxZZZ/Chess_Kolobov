@@ -51,19 +51,21 @@ function render() {       //отрисовка шахматной доски и помещение на нее фигур
 
 			if ((i%2 == 0 && j%2 == 0) || (i%2 == 1 && j%2 == 1)) {
 				var td = $("<td />", {
-					"width": "50",
-					"height": "50",
+					"width": "52px",
+					"height": "52px",
 					"bgcolor": "8B4513",
 					"data-x": j,
-					"data-y": i
+					"data-y": i,
+					"class": "cell"
 				}).html(imageSource); //помещает фигуру в ячейку таблицы
 			} else {
 				var td = $("<td />", {
-					"width": "50",
-					"height": "50",
+					"width": "52px",
+					"height": "52px",
 					"bgcolor": "F0E68C",
 					"data-x": j,
-					"data-y": i
+					"data-y": i,
+					"class": "cell"
 				}).html(imageSource);
 			}
 			
@@ -74,7 +76,7 @@ function render() {       //отрисовка шахматной доски и помещение на нее фигур
 	}
 }
 
-var proverka = function(x,y, itemColor, color){                     //проверяет фигура липротивника находится под возможным ходом
+var proverka = function(x,y, itemColor, color){                     //проверяет фигура ли противника находится под возможным ходом
 	if( x < 8 && x >= 0 && y < 8 && y >= 0 && itemColor != color)
 	{
 		return true;
@@ -158,61 +160,28 @@ var knightStep = function(x, y, color){
 	{"x": (x - 2), "y": (y + 1) }, {"x": (x - 2), "y": (y - 1) }, 
 	{"x": (x + 2), "y": (y + 1) }, {"x": (x + 2), "y": (y - 1) }];
 	
-	var item = k(x+1, y-2);
-	var itemColor = $(item).children().attr("color"); 
-	
-	if ((x+1) < 8 && (y-2) >= 0 && currentPosition[(y - 2)*8+x+1]["item"] != undefined &&  itemColor != color) { 
-		possibleStep.push({"x": (x + 1), "y": (y - 2) });
+	var item;
+		
+	for (var i = 0; i < 8; i++)
+	{
+		item = k(array[i]["x"], array[i]["y"]);
+		if( proverka(array[i]["x"], array[i]["y"], $(item).children().attr("color"), color))
+		{
+			possibleStep.push({"x": array[i]["x"], "y": array[i]["y"]});
+		}
 	}
+	return possibleStep;
+};
+
+var kingStep = function(x, y, color){
+	var possibleStep = [];
 	
-	item = k(x-1, y-2);
-	itemColor = $(item).children().attr("color"); 
+	var array = [{"x": (x + 1), "y": (y - 1) }, {"x": x, "y": (y - 1) },
+	{"x": (x - 1), "y": (y - 1) }, {"x": (x - 1), "y": y }, 
+	{"x": (x + 1), "y": y }, {"x": (x - 1), "y": (y + 1) }, 
+	{"x": (x + 1), "y": (y + 1) }, {"x": x, "y": (y + 1) }];
 	
-	if ((x-1) >= 0 && (y-2) >= 0 && currentPosition[(y - 2)*8+x-1]["item"] != undefined &&  itemColor != color) { 
-		possibleStep.push({"x": (x - 1), "y": (y - 2) });
-	}
-	
-	item = k(x+1, y+2);
-	itemColor = $(item).children().attr("color");
-	
-	if ((x+1) < 8 && (y+2) < 8 && currentPosition[(y + 2)*8+x+1]["item"] != undefined &&  itemColor != color) { 
-		possibleStep.push({"x": (x + 1), "y": (y + 2) });
-	} 
-	
-	item = k(x-1, y+2);
-	itemColor = $(item).children().attr("color"); 
-	
-	if ((x-1) >= 0 && (y+2) < 8 && currentPosition[(y + 2)*8+x-1]["item"] != undefined &&  itemColor != color) { 
-		possibleStep.push({"x": (x - 1), "y": (y + 2) });
-	}
-	
-	item = k(x-2, y-1);
-	itemColor = $(item).children().attr("color"); 
-	
-	if ((x-2) >= 0 && (y-1) >= 0 && currentPosition[(y - 1)*8+x-2]["item"] != undefined &&  itemColor != color) { 
-		possibleStep.push({"x": (x - 2), "y": (y - 1) });
-	}
-	
-	item = k(x-2, y+1);
-	itemColor = $(item).children().attr("color"); 
-	
-	if ((x-2)>=0 && (y+1) < 8 && currentPosition[(y + 1)*8+x-2]["item"] != undefined &&  itemColor != color) { 
-		possibleStep.push({"x": (x - 2), "y": (y + 1) });
-	}
-	
-	item = k(x+2, y-1);
-	itemColor = $(item).children().attr("color"); 
-	
-	if ((x+2) < 8 && (y-1) >= 0 && currentPosition[(y - 1)*8+x+2]["item"] != undefined &&  itemColor != color) { 
-		possibleStep.push({"x": (x + 2), "y": (y - 1) });
-	}
-	
-	item = k(x+2, y+1);
-	itemColor = $(item).children().attr("color"); 
-	
-	if ((x+2)>=0 && (y+1) < 8 && currentPosition[(y + 1)*8+x+2]["item"] != undefined &&  itemColor != color) { 
-		possibleStep.push({"x": (x + 2), "y": (y + 1) });
-	}
+	var item;
 		
 	for (var i = 0; i < 8; i++)
 	{
@@ -234,10 +203,6 @@ var bitshopStep = function (x, y, color){
 };
 
 var rookStep = function(x, y, color){
-	
-};
-
-var kingStep = function(x, y, color){
 	
 };
 
