@@ -152,7 +152,7 @@ var pawnStep = function(x, y, color){     //формирует и возвращает массив возмож
 	return possibleStep;
 };
 
-var knightStep = function(x, y, color){
+var knightStep = function(x, y, color){   //формирует и возвращает массив возможных ходов коня
 	var possibleStep = [];
 	
 	var array = [{"x": (x + 1), "y": (y - 2) }, {"x": (x - 1), "y": (y - 2) },
@@ -173,7 +173,7 @@ var knightStep = function(x, y, color){
 	return possibleStep;
 };
 
-var kingStep = function(x, y, color){
+var kingStep = function(x, y, color){     //формирует и возвращает массив возможных ходов короля
 	var possibleStep = [];
 	
 	var array = [{"x": (x + 1), "y": (y - 1) }, {"x": x, "y": (y - 1) },
@@ -194,19 +194,108 @@ var kingStep = function(x, y, color){
 	return possibleStep;
 };
 
-var queenStep = function(x, y, color){
+var rookStep = function(x, y, color){     //формирует и возвращает массив возможных ходов ладьи
+	var possibleStep = [];
 	
+	for (var i = 1; (x+i) < 8; i++) // вправо
+	{
+		item = k((x+i), y);
+		if( proverka((x+i), y, $(item).children().attr("color"), color))
+		{
+			possibleStep.push({"x": (x+i), "y": y});
+		}
+	}
+	
+	for (var i = 1; (x-i) >= 0; i++) // влево
+	{
+		item = k((x-i), y);
+		if( proverka((x-i), y, $(item).children().attr("color"), color))
+		{
+			possibleStep.push({"x": (x-i), "y": y});
+		}
+	}
+	
+	for (var i = 1; (y-i) >= 0; i++) // вверх
+	{
+		item = k(x, (y-i));
+		if( proverka(x, (y-i), $(item).children().attr("color"), color))
+		{
+			possibleStep.push({"x": x, "y": (y-i)});
+		}
+	}
+	
+	for (var i = 1; (y+i) < 8; i++) //вниз
+	{
+		item = k(x, (y+i));
+		if( proverka(x, (y+i), $(item).children().attr("color"), color))
+		{
+			possibleStep.push({"x": x, "y": (y+i)});
+		}
+	}
+	
+	return possibleStep;
 };
 
-var bitshopStep = function (x, y, color){
+var bitshopStep = function (x, y, color){ //формирует и возвращает массив возможных ходов слона
+	var possibleStep = [];
 	
+	for (var i = 1; (x+i) < 8 && (y-i) >=0; i++) // вправо-вверх
+	{
+		item = k((x+i), (y-i));
+		if( proverka((x+i), (y-i), $(item).children().attr("color"), color))
+		{
+			possibleStep.push({"x": (x+i), "y": (y-i)});
+		}
+	}
+	
+	for (var i = 1; (x-i) >= 0 && (y-i) >=0; i++) // влево-вверх
+	{
+		item = k((x-i), (y-i));
+		if( proverka((x-i), (y-i), $(item).children().attr("color"), color))
+		{
+			possibleStep.push({"x": (x-i), "y": (y-i)});
+		}
+	}
+	
+	for (var i = 1; (x+i) < 8 && (y+i) < 8; i++) // вправо-вниз
+	{
+		item = k((x+i), (y+i));
+		if( proverka((x+i), (y+i), $(item).children().attr("color"), color))
+		{
+			possibleStep.push({"x": (x+i), "y": (y+i)});
+		}
+	}
+	
+	for (var i = 1; (x-i) >= 0 && (y+i) < 8; i++) //влево-вниз
+	{
+		item = k((x-i), (y+i));
+		if( proverka((x-i), (y+i), $(item).children().attr("color"), color))
+		{
+			possibleStep.push({"x": (x-i), "y": (y+i)});
+		}
+	}
+	
+	return possibleStep;
 };
 
-var rookStep = function(x, y, color){
+var queenStep = function(x, y, color){    //формирует и возвращает массив возможных ходов дамы
+	var possibleStep = [];
 	
+	possibleStep = rookStep(x, y, color);// дама ходит как ладья
+	
+	var array = bitshopStep(x, y, color); // как слон
+	var i = 0;
+		
+	while (array[i])                     //добавление ходов слона в общий массив ходов
+	{
+		possibleStep.push({"x": array[i]["x"], "y": array[i]["y"]});
+		i++;
+	}
+	
+	return possibleStep;
 };
 
-var stepsObject = {   //в зависимости от того какая фигура вызывается нужная функция хода фигуры
+var stepsObject = {   //в зависимости от того какая фигура, вызывается нужная функция хода фигуры
 	"pawn": pawnStep,
 	"queen": queenStep,
 	"knight": knightStep,
