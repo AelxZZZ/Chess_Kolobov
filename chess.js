@@ -196,40 +196,69 @@ var kingStep = function(x, y, color){     //формирует и возвращает массив возмож
 
 var rookStep = function(x, y, color){     //формирует и возвращает массив возможных ходов ладьи
 	var possibleStep = [];
+	var item;
 	
 	for (var i = 1; (x+i) < 8; i++) // вправо
 	{
 		item = k((x+i), y);
-		if( proverka((x+i), y, $(item).children().attr("color"), color))
-		{
-			possibleStep.push({"x": (x+i), "y": y});
+		
+		if (currentPosition[y*8+x+i]["item"] == undefined) 
+		{                                                 //попадаем сюда, если клетка пустая
+			possibleStep.push({"x": (x+i), "y": y});  
+		}else{                                            //else добавляем возможный ход, если в клетке фигура противника и
+			if( proverka((x+i), y, $(item).children().attr("color"), color))
+			{
+				possibleStep.push({"x": (x+i), "y": y});
+			}
+			break;                                        //выскакиваем из цикла
 		}
 	}
 	
 	for (var i = 1; (x-i) >= 0; i++) // влево
 	{
 		item = k((x-i), y);
-		if( proverka((x-i), y, $(item).children().attr("color"), color))
+		
+		if (currentPosition[y*8+x-i]["item"] == undefined) 
 		{
-			possibleStep.push({"x": (x-i), "y": y});
+			possibleStep.push({"x": (x-i), "y": y});  
+		}else{
+			if( proverka((x-i), y, $(item).children().attr("color"), color))
+			{
+				possibleStep.push({"x": (x-i), "y": y});
+			}
+			break;
 		}
 	}
 	
 	for (var i = 1; (y-i) >= 0; i++) // вверх
 	{
 		item = k(x, (y-i));
-		if( proverka(x, (y-i), $(item).children().attr("color"), color))
+		
+		if (currentPosition[(y-i)*8+x]["item"] == undefined) 
 		{
-			possibleStep.push({"x": x, "y": (y-i)});
+			possibleStep.push({"x": x, "y": (y-i)});  
+		}else{
+			if( proverka(x, (y-i), $(item).children().attr("color"), color))
+			{
+				possibleStep.push({"x": x, "y": (y-i)});
+			}
+			break;
 		}
 	}
 	
 	for (var i = 1; (y+i) < 8; i++) //вниз
 	{
 		item = k(x, (y+i));
-		if( proverka(x, (y+i), $(item).children().attr("color"), color))
+		
+		if (currentPosition[(y+i)*8+x]["item"] == undefined) 
 		{
-			possibleStep.push({"x": x, "y": (y+i)});
+			possibleStep.push({"x": x, "y": (y+i)}); 
+		}else{
+			if( proverka(x, (y+i), $(item).children().attr("color"), color))
+			{
+				possibleStep.push({"x": x, "y": (y+i)});
+			}
+			break;
 		}
 	}
 	
@@ -238,40 +267,69 @@ var rookStep = function(x, y, color){     //формирует и возвращает массив возмож
 
 var bitshopStep = function (x, y, color){ //формирует и возвращает массив возможных ходов слона
 	var possibleStep = [];
+	var item;
 	
 	for (var i = 1; (x+i) < 8 && (y-i) >=0; i++) // вправо-вверх
 	{
 		item = k((x+i), (y-i));
-		if( proverka((x+i), (y-i), $(item).children().attr("color"), color))
+		
+		if (currentPosition[(y-i)*8+(x+i)]["item"] == undefined) 
 		{
 			possibleStep.push({"x": (x+i), "y": (y-i)});
+		}else{
+			if( proverka((x+i), (y-i), $(item).children().attr("color"), color))
+			{
+				possibleStep.push({"x": (x+i), "y": (y-i)});
+			}
+			break;
 		}
 	}
 	
 	for (var i = 1; (x-i) >= 0 && (y-i) >=0; i++) // влево-вверх
 	{
 		item = k((x-i), (y-i));
-		if( proverka((x-i), (y-i), $(item).children().attr("color"), color))
+		
+		if (currentPosition[(y-i)*8+(x-i)]["item"] == undefined) 
 		{
 			possibleStep.push({"x": (x-i), "y": (y-i)});
+		}else{
+			if( proverka((x-i), (y-i), $(item).children().attr("color"), color))
+			{
+				possibleStep.push({"x": (x-i), "y": (y-i)});
+			}
+			break;
 		}
 	}
 	
 	for (var i = 1; (x+i) < 8 && (y+i) < 8; i++) // вправо-вниз
 	{
 		item = k((x+i), (y+i));
-		if( proverka((x+i), (y+i), $(item).children().attr("color"), color))
+		
+		if (currentPosition[(y+i)*8+(x+i)]["item"] == undefined) 
 		{
 			possibleStep.push({"x": (x+i), "y": (y+i)});
+		}else{
+			if( proverka((x+i), (y+i), $(item).children().attr("color"), color))
+			{
+				possibleStep.push({"x": (x+i), "y": (y+i)});
+			}
+			break;
 		}
 	}
 	
 	for (var i = 1; (x-i) >= 0 && (y+i) < 8; i++) //влево-вниз
 	{
 		item = k((x-i), (y+i));
-		if( proverka((x-i), (y+i), $(item).children().attr("color"), color))
+		
+		if (currentPosition[(y+i)*8+(x-i)]["item"] == undefined) 
 		{
 			possibleStep.push({"x": (x-i), "y": (y+i)});
+		}else{
+			if( proverka((x-i), (y+i), $(item).children().attr("color"), color))
+			{
+				possibleStep.push({"x": (x-i), "y": (y+i)});
+			}
+			break;
 		}
 	}
 	
