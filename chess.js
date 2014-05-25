@@ -320,6 +320,9 @@ function changePosition(x, y, xNew, yNew) {              //смена позиции
 		if (currItem["type"] == "pawn") {               //после первого хода, пешка может ходить только на 1 клетку
 			currItem["first"] = false;
 		}
+		if (currItem["item"] == "bPawn") { 
+			currItem["item"] == "bQueen"
+		}
 		currentPosition[yNew*8 + xNew] = currItem;       //переставка фигуры в матрице
 		currentPosition[y*8 + x] = {};                   //стиранее ее с прошлой позиции в матрице
 		$(".possible-step").removeClass("possible-step"); //удаление класса возможные ходы со всех клеток, имевших его
@@ -327,7 +330,15 @@ function changePosition(x, y, xNew, yNew) {              //смена позиции
 		isFigureSelected = false;                       //фигура больше не выбрана
 		figureSelected = null;                          //тоже самое
 		blackOrWhite = !blackOrWhite;                    //переход хода к противнику
-		k(x, y).html("");                                //стиранее ее с прошлой позиции
+		k(x, y).html("");						//стиранее ее с прошлой позиции
+		if (currItem["item"] == "bPawn" && yNew == 7) {   //если черная пешка дошла до конца поля, становиться дамой
+			currItem["item"] = "bQueen";
+			currItem["type"] = "queen";
+		}
+		if (currItem["item"] == "wPawn" && yNew == 0) {   //если белая пешка дошла до конца поля, становиться дамой
+			currItem["item"] = "wQueen";
+			currItem["type"] = "queen";
+		}
 		k(xNew, yNew).html(chessImage[currItem["item"]]);//отрисовка фигуры на шахматной доске
 	} /*else {
 		// Говорим, что не можем пойти
