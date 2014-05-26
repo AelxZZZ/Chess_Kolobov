@@ -2,6 +2,8 @@
 var blackOrWhite = true; //если true - ход€т белые, иначе черные
 var isFigureSelected = false; // выбрана ли фигура
 var figureSelected = null; // €чейка с фигурой
+var blKing = false;
+var whKing = false;
 
 //pawn - пешка
 //rook - ладь€
@@ -439,6 +441,9 @@ $(document).ready(function(){
 	$('td').on('click', function() {
 		//console.log($(this).attr('data-x') + ' - ' + $(this).attr('data-y')); //helper
 		//Selected(this);
+		blKing = false; //‘лаги, есть ли короли на поле черный
+		whKing = false; //                              белый
+		
 		if(blackOrWhite)
 		{
 			var figureColor = $(this).children().attr('color');//цвет фигуры
@@ -491,6 +496,29 @@ $(document).ready(function(){
 					showPossibleStep(figureSelected);
 				}
 			}
+		}
+		
+		//проверка на конец игры
+		for (i=0; i < currentPosition.length; i++) //если присутствоет король флаг подниметс€
+		{
+			if (currentPosition[i]["item"] == "bKing")
+			{
+				blKing = true;
+			}
+			if (currentPosition[i]["item"] == "wKing")
+			{
+				whKing = true;
+			}
+		}
+		
+		if(blKing == false)
+		{
+			alert("White won! Game end.");
+		}
+		
+		if(whKing == false)
+		{
+			alert("Black won! Game end");
 		}
 	});
 })
