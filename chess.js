@@ -514,11 +514,23 @@ $(document).ready(function(){
 		if(blKing == false)
 		{
 			alert("White won! Game end.");
+			ExitReload();
 		}
 		
 		if(whKing == false)
 		{
 			alert("Black won! Game end");
+			ExitReload();
+		}
+		
+		function ExitReload()  //функция перезагрузки страницы или ее закрытия послы сыгранной игры
+		{
+			if (confirm("Do you want to play again?"))
+			{
+				window.location.reload();
+			} else {
+				window.close();
+			}
 		}
 	});
 })
