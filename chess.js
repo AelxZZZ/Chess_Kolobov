@@ -447,7 +447,7 @@ function changePosition(x, y, xNew, yNew) {              //смена позиции
 		}
 		k(xNew, yNew).html(chessImage[currItem["item"]]);//отрисовка фигуры на шахматной доске
 		
-		Shah(xNew, yNew); //проверка на шах
+		//Shah(xNew, yNew); //проверка на шах
 	} else {
 		alert("Wrong step!");
 	}
@@ -483,13 +483,11 @@ function getItemObject(x, y) {
 
 //var previousSelect = [];
 
-
 $(document).ready(function(){
 	render();//отрисовка доски и шахмат
 
 	$('td').on('click', function() {
 		//console.log($(this).attr('data-x') + ' - ' + $(this).attr('data-y')); //helper
-		//Selected(this);
 		blKing = false; //‘лаги, есть ли короли на поле черный
 		whKing = false; //                              белый
 		
@@ -513,6 +511,7 @@ $(document).ready(function(){
 					var xNew = parseInt($(this).attr('data-x'));
 					var	yNew = parseInt($(this).attr('data-y'));
 					changePosition(x, y, xNew, yNew);
+					Shah(xNew, yNew); //проверка на шах
 				} else {
 					//если фигура не выбрана, выбираем и подсвечиваем возможные ходы
 					Selected(this);//выдел€ем €чейку и фигура выбрана
@@ -533,12 +532,13 @@ $(document).ready(function(){
 
 				if(isFigureSelected)
 				{
-					var x = parseInt($(figureSelected).attr('data-x')),
-						y = parseInt($(figureSelected).attr('data-y'));
+					var x = parseInt($(figureSelected).attr('data-x'));
+					var	y = parseInt($(figureSelected).attr('data-y'));
 
 					var xNew = parseInt($(this).attr('data-x'));
-						yNew = parseInt($(this).attr('data-y'));
+					var	yNew = parseInt($(this).attr('data-y'));
 					changePosition(x, y, xNew, yNew);
+					Shah(xNew, yNew); //проверка на шах
 				} else {
 					Selected(this);//выдел€ем €чейку и фигура выбрана
 					figureSelected = $(this);
