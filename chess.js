@@ -374,6 +374,22 @@ function Selected (tmp)
 	isFigureSelected = true;
 }
 
+function Mat (x, y) //может ли двигаться фигура
+{
+	var item = k(x, y);                              
+	var color = $(item).children().attr("color");
+	var obj = getItemObject(x, y);                    //получает фигуру с данными координатами
+	var type = obj["type"];                           //тип фигуры
+
+	var futureSteps = stepsObject[type](x, y, color);
+	if (futureSteps.length == 0)
+	{
+		return true;
+	}else{
+		return false;
+	}
+}
+
 function Shah (x, y)
 {
 	var item = k(x, y);                              
@@ -391,7 +407,14 @@ function Shah (x, y)
 		
 		if (color != curColor && currentPosition[curY*8+curX]["type"] == "king") //проверяем, находится ли король под ударом текущей фигуры в след ходе
 		{
-			alert("Shah!");   //если да, то Шах
+			if(Mat(curX, curY))
+			{
+				alert("Shah i mat!!!")
+			}else{
+				alert("Shah!")
+			}
+			
+			//alert("Shah!");   //если да, то Шах
 		}
 	}
 }
