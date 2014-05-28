@@ -374,7 +374,11 @@ function Selected (tmp)
 	isFigureSelected = true;
 }
 
+<<<<<<< HEAD
 /*function Mat (x, y) //может ли двигаться фигура
+=======
+function Mat (x, y) //может ли двигаться фигура
+>>>>>>> b6c741ad6b3af0018d5eea08b2510469642d4e9a
 {
 	var item = k(x, y);                              
 	var color = $(item).children().attr("color");
@@ -388,7 +392,11 @@ function Selected (tmp)
 	}else{
 		return false;
 	}
+<<<<<<< HEAD
 }*/
+=======
+}
+>>>>>>> b6c741ad6b3af0018d5eea08b2510469642d4e9a
 
 function Shah (x, y)
 {
@@ -407,14 +415,24 @@ function Shah (x, y)
 		
 		if (color != curColor && currentPosition[curY*8+curX]["type"] == "king") //проверяем, находится ли король под ударом текущей фигуры в след ходе
 		{
+<<<<<<< HEAD
 			/*if(Mat(curX, curY))
+=======
+			if(Mat(curX, curY))
+>>>>>>> b6c741ad6b3af0018d5eea08b2510469642d4e9a
 			{
 				alert("Shah i mat!!!")
 			}else{
 				alert("Shah!")
+<<<<<<< HEAD
 			}*/
 			
 			alert("Shah!");   //если да, то Шах
+=======
+			}
+			
+			//alert("Shah!");   //если да, то Шах
+>>>>>>> b6c741ad6b3af0018d5eea08b2510469642d4e9a
 		}
 	}
 }
