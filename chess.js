@@ -374,6 +374,28 @@ function Selected (tmp)
 	isFigureSelected = true;
 }
 
+function Shah (x, y)
+{
+	var item = k(x, y);                              
+	var color = $(item).children().attr("color");
+	var obj = getItemObject(x, y);                    //получает фигуру с данными координатами
+	var type = obj["type"];                           //тип фигуры
+
+	var futureSteps = stepsObject[type](x, y, color); //массив возможных ходов фигуры
+	for (var i=0; i < futureSteps.length; i++) //пробегаем по массиву
+	{
+		var curX = futureSteps[i]["x"];
+		var curY = futureSteps[i]["y"];
+		var curItem = k(curX, curY);
+		var curColor = $(curItem).children().attr("color");
+		
+		if (color != curColor && currentPosition[curY*8+curX]["type"] == "king") //проверяем, находится ли король под ударом текущей фигуры в след ходе
+		{
+			alert("Shah!");   //если да, то Шах
+		}
+	}
+}
+
 function changePosition(x, y, xNew, yNew) {              //смена позиции
 	if (canWeChangePosition(xNew, yNew)) {
 		var currItem = currentPosition[y*8 + x];
@@ -390,6 +412,7 @@ function changePosition(x, y, xNew, yNew) {              //смена позиции
 		isFigureSelected = false;                       //фигура больше не выбрана
 		figureSelected = null;                          //тоже самое
 		blackOrWhite = !blackOrWhite;                    //переход хода к противнику
+		
 		k(x, y).html("");						//стиранее ее с прошлой позиции
 		if (currItem["item"] == "bPawn" && yNew == 7) {   //если черная пешка дошла до конца поля, становиться дамой
 			currItem["item"] = "bQueen";
@@ -400,9 +423,12 @@ function changePosition(x, y, xNew, yNew) {              //смена позиции
 			currItem["type"] = "queen";
 		}
 		k(xNew, yNew).html(chessImage[currItem["item"]]);//отрисовка фигуры на шахматной доске
-	} /*else {
-		// Говорим, что не можем пойти
-	}*/
+		
+		Shah(xNew, yNew); //проверка на шах
+	} else {
+		alert("Wrong step!");
+	}
+	
 }
 
 function canWeChangePosition(x, y) {                 //проверка на возможность смены позиции
@@ -499,7 +525,7 @@ $(document).ready(function(){
 		}
 		
 		//проверка на конец игры
-		for (i=0; i < currentPosition.length; i++) //если присутствоет король флаг поднимется
+		for (var i=0; i < currentPosition.length; i++) //если присутствоет король флаг поднимется
 		{
 			if (currentPosition[i]["item"] == "bKing")
 			{
