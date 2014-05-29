@@ -1,3 +1,7 @@
+//var socket = io.connect('http://localhost:8080/');
+
+
+
 
 var blackOrWhite = true; //если true - ходят белые, иначе черные
 var isFigureSelected = false; // выбрана ли фигура
@@ -108,17 +112,23 @@ var pawnStep = function(x, y, color){     //формирует и возвращает массив возмож
 		
 		item = k(x, y+1);
 		itemColor = $(item).children().attr("color");
-		
-		if (currentPosition[(y + 1)*8+x]["item"] != undefined &&  itemColor != color) { //проверяется клетка перед пешкой, свободна ли
-			possibleStep.push({"x": x, "y": (y + 1) });
-		} 
-		
+				
 		// добавление варианта простого хода вперед
 		if (currentPosition[y*8 + x]["first"]) {                      //Если первый ход, то можно сходить через клетку
-			possibleStep.push({"x": x, "y": (y + 1) });
-			possibleStep.push({"x": x, "y": (y + 2) });
+			if (currentPosition[(y + 1)*8+x]["item"] == undefined)
+			{
+				possibleStep.push({"x": x, "y": (y + 1) });
+				
+				if (currentPosition[(y + 2)*8+x]["item"] == undefined)
+				{
+					possibleStep.push({"x": x, "y": (y + 2) });
+				}
+			}
 		} else {
-			possibleStep.push({"x": x, "y": (y + 1) });
+			if (currentPosition[(y + 1)*8+x]["item"] == undefined)
+			{
+				possibleStep.push({"x": x, "y": (y + 1) });
+			}
 		}
 	} else {
 	
@@ -138,16 +148,21 @@ var pawnStep = function(x, y, color){     //формирует и возвращает массив возмож
 		
 		item = k(x, y-1);
 		itemColor = $(item).children().attr("color");
-		
-		if (currentPosition[(y - 1)*8+x]["item"] != undefined &&  itemColor != color) {
-			possibleStep.push({"x": x, "y": (y - 1) });
-		} 
-		
+				
 		if (currentPosition[y*8 + x]["first"]) {
-			possibleStep.push({"x": x, "y": (y - 1) });
-			possibleStep.push({"x": x, "y": (y - 2) });
+			if (currentPosition[(y - 1)*8+x]["item"] == undefined)
+			{
+				possibleStep.push({"x": x, "y": (y - 1) });
+				if (currentPosition[(y - 2)*8+x]["item"] == undefined)
+				{
+					possibleStep.push({"x": x, "y": (y - 2) });
+				}
+			}
 		} else {
-			possibleStep.push({"x": x, "y": (y - 1) });
+			if (currentPosition[(y - 1)*8+x]["item"] == undefined)
+			{
+				possibleStep.push({"x": x, "y": (y - 1) });
+			}
 		}
 	}
 
@@ -477,7 +492,7 @@ function showPossibleStep(elem) {
 }
 
 function getItemObject(x, y) {
-	var elem = currentPosition[y*8 + x]
+	var elem = currentPosition[y*8 + x];
 	return elem;
 }
 
