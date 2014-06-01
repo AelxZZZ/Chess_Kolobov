@@ -8,6 +8,10 @@ var isFigureSelected = false; // выбрана ли фигура
 var figureSelected = null; // ячейка с фигурой
 var blKing = false;
 var whKing = false;
+var possibleMat = false;// если шах, то true
+var globX = null; //координаты ячейки таблицы, 
+var globY = null; //где находится фигура, которая поставила шаг
+var globColor = null;//цвет фигуры, поставившей шаг
 
 //pawn - пешка
 //rook - ладья
@@ -429,13 +433,30 @@ function Shah (x, y)
 			}else{
 				alert("Shah!")
 			}*/
-			alert("Shah!");   //если да, то Шах
+			if (possibleMat)
+			{
+				alert("Mat!!!");
+			}else{
+				alert("Shah!");
+				possibleMat = true;
+				globX = x;
+				globY = y;
+				globColor = color;
+			}
 		}
 	}
 }
 
 function changePosition(x, y, xNew, yNew) {              //смена позиции
 	if (canWeChangePosition(xNew, yNew)) {
+		var curColor = null; //требуется для мата
+		if(blackOrWhite)
+		{
+			curColor = "white";
+		}else{
+			curColor = "black"
+		}
+		
 		var currItem = currentPosition[y*8 + x];
 		if (currItem["type"] == "pawn") {               //после первого хода, пешка может ходить только на 1 клетку
 			currItem["first"] = false;
@@ -462,7 +483,11 @@ function changePosition(x, y, xNew, yNew) {              //смена позиции
 		}
 		k(xNew, yNew).html(chessImage[currItem["item"]]);//отрисовка фигуры на шахматной доске
 		
-		//Shah(xNew, yNew); //проверка на шах
+		if (globColor != curColor && possibleMat)
+		{
+			Shah(globX, globY);
+			possibleMat = false;
+		}
 	} else {
 		alert("Wrong step!");
 	}
