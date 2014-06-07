@@ -1,13 +1,22 @@
 <html>
 	<head>
-		<!--<script src="http://localhost:8080/socket.io/socket.io.js"></script>-->
+		<meta charset="utf8"/>
+		<script src="http://localhost:8080/socket.io/socket.io.js"></script>
 		<link rel="stylesheet" type="text/css" href="style.css">
 		<!--<script src ="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>-->
 		<script type="text/javascript" src="./JS/jquery-2.0.3.min.js"></script>
 		<script src="./JS/chess.js"></script>
-		
+		<script type="text/javascript" src="./JS/chat.js"></script>
 	</head>
 	<body>
+		<h1 class="header room">Мы в комнате</h1>
+		<h3 class="user-color"></h3>
 		<table width = '444' height = '400' border = '5' bordercolor = '663300' id="tableChess"></table>
+		<div class="chat">
+			<div class="timeline"></div>
+			<form class="chatForm">
+				<input type="text" class="chatInput" disabled="disabled" />
+			</form>
+		</div>
 	</body>
 </html>

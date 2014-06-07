@@ -1,24 +1,26 @@
-//var socket = io.connect('http://localhost:8080/');
+var socket = io.connect('http://localhost:8080/'); //('http://10.254.24.209:8080/')
 
 
 
 
-var blackOrWhite = true; //если true - ходят белые, иначе черные
-var isFigureSelected = false; // выбрана ли фигура
-var figureSelected = null; // ячейка с фигурой
+var blackOrWhite = true; //РµСЃР»Рё true - С…РѕРґСЏС‚ Р±РµР»С‹Рµ, РёРЅР°С‡Рµ С‡РµСЂРЅС‹Рµ
+var isFigureSelected = false; // РІС‹Р±СЂР°РЅР° Р»Рё С„РёРіСѓСЂР°
+var figureSelected = null; // СЏС‡РµР№РєР° СЃ С„РёРіСѓСЂРѕР№
 var blKing = false;
 var whKing = false;
-var possibleMat = false;// если шах, то true
-var globX = null; //координаты ячейки таблицы, 
-var globY = null; //где находится фигура, которая поставила шаг
-var globColor = null;//цвет фигуры, поставившей шаг
-
-//pawn - пешка
-//rook - ладья
-//khight - конь
-//bitshop - слон
-//queen - ферзь
-//king - король
+var possibleMat = false;// РµСЃР»Рё С€Р°С…, С‚Рѕ true
+var globX = null; //РєРѕРѕСЂРґРёРЅР°С‚С‹ СЏС‡РµР№РєРё С‚Р°Р±Р»РёС†С‹, 
+var globY = null; //РіРґРµ РЅР°С…РѕРґРёС‚СЃСЏ С„РёРіСѓСЂР°, РєРѕС‚РѕСЂР°СЏ РїРѕСЃС‚Р°РІРёР»Р° С€Р°Рі
+var globColor = null;//С†РІРµС‚ С„РёРіСѓСЂС‹, РїРѕСЃС‚Р°РІРёРІС€РµР№ С€Р°Рі
+var canMove = true; //РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РґРІРёРіР°С‚СЊСЃСЏ
+var yourColor = true; //С†РІРµС‚ РёРіСЂРѕРєР°
+var chatEnable = false; //РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РѕС‚РїСЂР°РІР»СЏС‚СЊ СЃРѕРѕР±С‰РµРЅРёСЏ
+//pawn - РїРµС€РєР°
+//rook - Р»Р°РґСЊСЏ
+//khight - РєРѕРЅСЊ
+//bitshop - СЃР»РѕРЅ
+//queen - С„РµСЂР·СЊ
+//king - РєРѕСЂРѕР»СЊ
 
 var chessImage = {
 	'bPawn' : '<img color = "black" src= "figures/brown/Brown_P.ico"/>',
@@ -36,7 +38,7 @@ var chessImage = {
 	'wKing' : '<img color = "white" src= "figures/light/White_K.ico"/>'
 }
 
-var firstPosition = [       //матрица(список) фигур (начальная)
+var firstPosition = [       //РјР°С‚СЂРёС†Р°(СЃРїРёСЃРѕРє) С„РёРіСѓСЂ (РЅР°С‡Р°Р»СЊРЅР°СЏ)
 {"item": 'bRook', "type": "rook"}, {"item": 'bKnight', "type": "knight"}, {"item": 'bBitshop', "type": "bitshop"}, {"item": 'bQueen', "type": "queen"}, {"item": 'bKing', "type": "king"}, {"item": 'bBitshop', "type": "bitshop"}, {"item": 'bKnight', "type": "knight"}, {"item": 'bRook', "type": "rook"},
 {"item": 'bPawn', "type": "pawn", "first": true}, {"item": 'bPawn', "type": "pawn", "first": true}, {"item": 'bPawn', "type": "pawn", "first": true}, {"item": 'bPawn', "type": "pawn", "first": true}, {"item": 'bPawn', "type": "pawn", "first": true}, {"item": 'bPawn', "type": "pawn", "first": true}, {"item": 'bPawn', "type": "pawn", "first": true}, {"item": 'bPawn', "type": "pawn", "first": true},
 {}, {}, {}, {}, {}, {}, {}, {},
@@ -47,9 +49,9 @@ var firstPosition = [       //матрица(список) фигур (начальная)
 {"item": 'wRook', "type": "rook"}, {"item": 'wKnight', "type": "knight"}, {"item": 'wBitshop', "type": "bitshop"}, {"item": 'wQueen', "type": "queen"}, {"item": 'wKing', "type": "king"}, {"item": 'wBitshop', "type": "bitshop"}, {"item": 'wKnight', "type": "knight"}, {"item": 'wRook', "type": "rook"}
 ];
 
-var currentPosition = firstPosition.slice(); // Хитрое копирование
+var currentPosition = firstPosition.slice(); // РҐРёС‚СЂРѕРµ РєРѕРїРёСЂРѕРІР°РЅРёРµ
 
-function render() {       //отрисовка шахматной доски и помещение на нее фигур
+function render() {       //РѕС‚СЂРёСЃРѕРІРєР° С€Р°С…РјР°С‚РЅРѕР№ РґРѕСЃРєРё Рё РїРѕРјРµС‰РµРЅРёРµ РЅР° РЅРµРµ С„РёРіСѓСЂ
 	var table = $("#tableChess");
 
 	for (var i = 0; i < 8; i++) {
@@ -67,7 +69,7 @@ function render() {       //отрисовка шахматной доски и помещение на нее фигур
 					"data-x": j,
 					"data-y": i,
 					"class": "cell"
-				}).html(imageSource); //помещает фигуру в ячейку таблицы
+				}).html(imageSource); //РїРѕРјРµС‰Р°РµС‚ С„РёРіСѓСЂСѓ РІ СЏС‡РµР№РєСѓ С‚Р°Р±Р»РёС†С‹
 			} else {
 				var td = $("<td />", {
 					"width": "52px",
@@ -79,46 +81,46 @@ function render() {       //отрисовка шахматной доски и помещение на нее фигур
 				}).html(imageSource);
 			}
 			
-			tr.append(td); // добавление внутрь элемента
+			tr.append(td); // РґРѕР±Р°РІР»РµРЅРёРµ РІРЅСѓС‚СЂСЊ СЌР»РµРјРµРЅС‚Р°
 		}
 
 		table.append(tr);
 	}
 }
 
-var proverka = function(x,y, itemColor, color){                     //проверяет фигура ли противника находится под возможным ходом
+var proverka = function(x,y, itemColor, color){ //РїСЂРѕРІРµСЂСЏРµС‚ С„РёРіСѓСЂР° Р»Рё РїСЂРѕС‚РёРІРЅРёРєР° РЅР°С…РѕРґРёС‚СЃСЏ РїРѕРґ РІРѕР·РјРѕР¶РЅС‹Рј С…РѕРґРѕРј
 	if( x < 8 && x >= 0 && y < 8 && y >= 0 && itemColor != color)
 	{
-		return true;
+		return true;//РµСЃР»Рё РїСЂРѕС‚РёРІРЅРёРєР° true
 	} else{
 		return false;
 	}
 }
 
-var pawnStep = function(x, y, color){     //формирует и возвращает массив возможных ходов пешки
-	var possibleStep = [];                //сам массив
+var pawnStep = function(x, y, color){     //С„РѕСЂРјРёСЂСѓРµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ РІРѕР·РјРѕР¶РЅС‹С… С…РѕРґРѕРІ РїРµС€РєРё
+	var possibleStep = [];                //СЃР°Рј РјР°СЃСЃРёРІ
 
 	if (color == "black") {
 	
 		var item = k(x+1, y+1);
-		var itemColor = $(item).children().attr("color"); //нужен для того, чтобы получить цвет фигуры в клетке возможного хода
+		var itemColor = $(item).children().attr("color"); //РЅСѓР¶РµРЅ РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РїРѕР»СѓС‡РёС‚СЊ С†РІРµС‚ С„РёРіСѓСЂС‹ РІ РєР»РµС‚РєРµ РІРѕР·РјРѕР¶РЅРѕРіРѕ С…РѕРґР°
 		
-		if (currentPosition[(y + 1)*8+x+1]["item"] != undefined &&  itemColor != color && (x+1) < 8) { //проверяется правая диагональ, свободна ли
+		if (currentPosition[(y + 1)*8+x+1]["item"] != undefined &&  itemColor != color && (x+1) < 8) { //РїСЂРѕРІРµСЂСЏРµС‚СЃСЏ РїСЂР°РІР°СЏ РґРёР°РіРѕРЅР°Р»СЊ, СЃРІРѕР±РѕРґРЅР° Р»Рё
 			possibleStep.push({"x": x + 1, "y": (y + 1) });
 		}
 		
 		item = k(x-1, y+1);
 		itemColor = $(item).children().attr("color"); 
 		
-		if (currentPosition[(y + 1)*8+x-1]["item"] != undefined &&  itemColor != color && (x-1)>=0) { //проверяется левая диагональ, свободна ли
+		if (currentPosition[(y + 1)*8+x-1]["item"] != undefined &&  itemColor != color && (x-1)>=0) { //РїСЂРѕРІРµСЂСЏРµС‚СЃСЏ Р»РµРІР°СЏ РґРёР°РіРѕРЅР°Р»СЊ, СЃРІРѕР±РѕРґРЅР° Р»Рё
 			possibleStep.push({"x": x - 1, "y": (y + 1) });
 		}
 		
 		item = k(x, y+1);
 		itemColor = $(item).children().attr("color");
 				
-		// добавление варианта простого хода вперед
-		if (currentPosition[y*8 + x]["first"]) {                      //Если первый ход, то можно сходить через клетку
+		// РґРѕР±Р°РІР»РµРЅРёРµ РІР°СЂРёР°РЅС‚Р° РїСЂРѕСЃС‚РѕРіРѕ С…РѕРґР° РІРїРµСЂРµРґ
+		if (currentPosition[y*8 + x]["first"]) {                      //Р•СЃР»Рё РїРµСЂРІС‹Р№ С…РѕРґ, С‚Рѕ РјРѕР¶РЅРѕ СЃС…РѕРґРёС‚СЊ С‡РµСЂРµР· РєР»РµС‚РєСѓ
 			if (currentPosition[(y + 1)*8+x]["item"] == undefined)
 			{
 				possibleStep.push({"x": x, "y": (y + 1) });
@@ -173,7 +175,7 @@ var pawnStep = function(x, y, color){     //формирует и возвращает массив возмож
 	return possibleStep;
 };
 
-var knightStep = function(x, y, color){   //формирует и возвращает массив возможных ходов коня
+var knightStep = function(x, y, color){   //С„РѕСЂРјРёСЂСѓРµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ РІРѕР·РјРѕР¶РЅС‹С… С…РѕРґРѕРІ РєРѕРЅСЏ
 	var possibleStep = [];
 	
 	var array = [{"x": (x + 1), "y": (y - 2) }, {"x": (x - 1), "y": (y - 2) },
@@ -194,7 +196,7 @@ var knightStep = function(x, y, color){   //формирует и возвращает массив возмож
 	return possibleStep;
 };
 
-var kingStep = function(x, y, color){     //формирует и возвращает массив возможных ходов короля
+var kingStep = function(x, y, color){     //С„РѕСЂРјРёСЂСѓРµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ РІРѕР·РјРѕР¶РЅС‹С… С…РѕРґРѕРІ РєРѕСЂРѕР»СЏ
 	var possibleStep = [];
 	
 	var array = [{"x": (x + 1), "y": (y - 1) }, {"x": x, "y": (y - 1) },
@@ -215,27 +217,27 @@ var kingStep = function(x, y, color){     //формирует и возвращает массив возмож
 	return possibleStep;
 };
 
-var rookStep = function(x, y, color){     //формирует и возвращает массив возможных ходов ладьи
+var rookStep = function(x, y, color){     //С„РѕСЂРјРёСЂСѓРµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ РІРѕР·РјРѕР¶РЅС‹С… С…РѕРґРѕРІ Р»Р°РґСЊРё
 	var possibleStep = [];
 	var item;
 	
-	for (var i = 1; (x+i) < 8; i++) // вправо
+	for (var i = 1; (x+i) < 8; i++) // РІРїСЂР°РІРѕ
 	{
 		item = k((x+i), y);
 		
 		if (currentPosition[y*8+x+i]["item"] == undefined) 
-		{                                                 //попадаем сюда, если клетка пустая
+		{                                                 //РїРѕРїР°РґР°РµРј СЃСЋРґР°, РµСЃР»Рё РєР»РµС‚РєР° РїСѓСЃС‚Р°СЏ
 			possibleStep.push({"x": (x+i), "y": y});  
-		}else{                                            //else добавляем возможный ход, если в клетке фигура противника и
+		}else{                                            //else РґРѕР±Р°РІР»СЏРµРј РІРѕР·РјРѕР¶РЅС‹Р№ С…РѕРґ, РµСЃР»Рё РІ РєР»РµС‚РєРµ С„РёРіСѓСЂР° РїСЂРѕС‚РёРІРЅРёРєР° Рё
 			if( proverka((x+i), y, $(item).children().attr("color"), color))
 			{
 				possibleStep.push({"x": (x+i), "y": y});
 			}
-			break;                                        //выскакиваем из цикла
+			break;                                        //РІС‹СЃРєР°РєРёРІР°РµРј РёР· С†РёРєР»Р°
 		}
 	}
 	
-	for (var i = 1; (x-i) >= 0; i++) // влево
+	for (var i = 1; (x-i) >= 0; i++) // РІР»РµРІРѕ
 	{
 		item = k((x-i), y);
 		
@@ -251,7 +253,7 @@ var rookStep = function(x, y, color){     //формирует и возвращает массив возмож
 		}
 	}
 	
-	for (var i = 1; (y-i) >= 0; i++) // вверх
+	for (var i = 1; (y-i) >= 0; i++) // РІРІРµСЂС…
 	{
 		item = k(x, (y-i));
 		
@@ -267,7 +269,7 @@ var rookStep = function(x, y, color){     //формирует и возвращает массив возмож
 		}
 	}
 	
-	for (var i = 1; (y+i) < 8; i++) //вниз
+	for (var i = 1; (y+i) < 8; i++) //РІРЅРёР·
 	{
 		item = k(x, (y+i));
 		
@@ -286,11 +288,11 @@ var rookStep = function(x, y, color){     //формирует и возвращает массив возмож
 	return possibleStep;
 };
 
-var bitshopStep = function (x, y, color){ //формирует и возвращает массив возможных ходов слона
+var bitshopStep = function (x, y, color){ //С„РѕСЂРјРёСЂСѓРµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ РІРѕР·РјРѕР¶РЅС‹С… С…РѕРґРѕРІ СЃР»РѕРЅР°
 	var possibleStep = [];
 	var item;
 	
-	for (var i = 1; (x+i) < 8 && (y-i) >=0; i++) // вправо-вверх
+	for (var i = 1; (x+i) < 8 && (y-i) >=0; i++) // РІРїСЂР°РІРѕ-РІРІРµСЂС…
 	{
 		item = k((x+i), (y-i));
 		
@@ -306,7 +308,7 @@ var bitshopStep = function (x, y, color){ //формирует и возвращает массив возмож
 		}
 	}
 	
-	for (var i = 1; (x-i) >= 0 && (y-i) >=0; i++) // влево-вверх
+	for (var i = 1; (x-i) >= 0 && (y-i) >=0; i++) // РІР»РµРІРѕ-РІРІРµСЂС…
 	{
 		item = k((x-i), (y-i));
 		
@@ -322,7 +324,7 @@ var bitshopStep = function (x, y, color){ //формирует и возвращает массив возмож
 		}
 	}
 	
-	for (var i = 1; (x+i) < 8 && (y+i) < 8; i++) // вправо-вниз
+	for (var i = 1; (x+i) < 8 && (y+i) < 8; i++) // РІРїСЂР°РІРѕ-РІРЅРёР·
 	{
 		item = k((x+i), (y+i));
 		
@@ -338,7 +340,7 @@ var bitshopStep = function (x, y, color){ //формирует и возвращает массив возмож
 		}
 	}
 	
-	for (var i = 1; (x-i) >= 0 && (y+i) < 8; i++) //влево-вниз
+	for (var i = 1; (x-i) >= 0 && (y+i) < 8; i++) //РІР»РµРІРѕ-РІРЅРёР·
 	{
 		item = k((x-i), (y+i));
 		
@@ -357,15 +359,15 @@ var bitshopStep = function (x, y, color){ //формирует и возвращает массив возмож
 	return possibleStep;
 };
 
-var queenStep = function(x, y, color){    //формирует и возвращает массив возможных ходов дамы
+var queenStep = function(x, y, color){    //С„РѕСЂРјРёСЂСѓРµС‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ РІРѕР·РјРѕР¶РЅС‹С… С…РѕРґРѕРІ РґР°РјС‹
 	var possibleStep = [];
 	
-	possibleStep = rookStep(x, y, color);// дама ходит как ладья
+	possibleStep = rookStep(x, y, color);// РґР°РјР° С…РѕРґРёС‚ РєР°Рє Р»Р°РґСЊСЏ
 	
-	var array = bitshopStep(x, y, color); // как слон
+	var array = bitshopStep(x, y, color); // РєР°Рє СЃР»РѕРЅ
 	var i = 0;
 		
-	while (array[i])                     //добавление ходов слона в общий массив ходов
+	while (array[i])                     //РґРѕР±Р°РІР»РµРЅРёРµ С…РѕРґРѕРІ СЃР»РѕРЅР° РІ РѕР±С‰РёР№ РјР°СЃСЃРёРІ С…РѕРґРѕРІ
 	{
 		possibleStep.push({"x": array[i]["x"], "y": array[i]["y"]});
 		i++;
@@ -374,7 +376,7 @@ var queenStep = function(x, y, color){    //формирует и возвращает массив возмож
 	return possibleStep;
 };
 
-var stepsObject = {   //в зависимости от того какая фигура, вызывается нужная функция хода фигуры
+var stepsObject = {   //РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РѕРіРѕ РєР°РєР°СЏ С„РёРіСѓСЂР°, РІС‹Р·С‹РІР°РµС‚СЃСЏ РЅСѓР¶РЅР°СЏ С„СѓРЅРєС†РёСЏ С…РѕРґР° С„РёРіСѓСЂС‹
 	"pawn": pawnStep,
 	"queen": queenStep,
 	"knight": knightStep,
@@ -393,12 +395,12 @@ function Selected (tmp)
 	isFigureSelected = true;
 }
 
-/*function Mat (x, y) //может ли двигаться фигура
+/*function Mat (x, y) //РјРѕР¶РµС‚ Р»Рё РґРІРёРіР°С‚СЊСЃСЏ С„РёРіСѓСЂР°
 {
 	var item = k(x, y);                              
 	var color = $(item).children().attr("color");
-	var obj = getItemObject(x, y);                    //получает фигуру с данными координатами
-	var type = obj["type"];                           //тип фигуры
+	var obj = getItemObject(x, y);                    //РїРѕР»СѓС‡Р°РµС‚ С„РёРіСѓСЂСѓ СЃ РґР°РЅРЅС‹РјРё РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё
+	var type = obj["type"];                           //С‚РёРї С„РёРіСѓСЂС‹
 
 	var futureSteps = stepsObject[type](x, y, color);
 	if (futureSteps.length == 0)
@@ -413,26 +415,19 @@ function Shah (x, y)
 {
 	var item = k(x, y);                              
 	var color = $(item).children().attr("color");
-	var obj = getItemObject(x, y);                    //получает фигуру с данными координатами
-	var type = obj["type"];                           //тип фигуры
+	var obj = getItemObject(x, y);                    //РїРѕР»СѓС‡Р°РµС‚ С„РёРіСѓСЂСѓ СЃ РґР°РЅРЅС‹РјРё РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё
+	var type = obj["type"];                           //С‚РёРї С„РёРіСѓСЂС‹
 
-	var futureSteps = stepsObject[type](x, y, color); //массив возможных ходов фигуры
-	for (var i=0; i < futureSteps.length; i++) //пробегаем по массиву
+	var futureSteps = stepsObject[type](x, y, color); //РјР°СЃСЃРёРІ РІРѕР·РјРѕР¶РЅС‹С… С…РѕРґРѕРІ С„РёРіСѓСЂС‹
+	for (var i=0; i < futureSteps.length; i++) //РїСЂРѕР±РµРіР°РµРј РїРѕ РјР°СЃСЃРёРІСѓ
 	{
 		var curX = futureSteps[i]["x"];
 		var curY = futureSteps[i]["y"];
 		var curItem = k(curX, curY);
 		var curColor = $(curItem).children().attr("color");
 		
-		if (color != curColor && currentPosition[curY*8+curX]["type"] == "king") //проверяем, находится ли король под ударом текущей фигуры в след ходе
+		if (color != curColor && currentPosition[curY*8+curX]["type"] == "king") //РїСЂРѕРІРµСЂСЏРµРј, РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё РєРѕСЂРѕР»СЊ РїРѕРґ СѓРґР°СЂРѕРј С‚РµРєСѓС‰РµР№ С„РёРіСѓСЂС‹ РІ СЃР»РµРґ С…РѕРґРµ
 		{
-
-			/*if(Mat(curX, curY))
-			{
-				alert("Shah i mat!!!")
-			}else{
-				alert("Shah!")
-			}*/
 			if (possibleMat)
 			{
 				alert("Mat!!!");
@@ -447,9 +442,9 @@ function Shah (x, y)
 	}
 }
 
-function changePosition(x, y, xNew, yNew) {              //смена позиции
+function changePosition(x, y, xNew, yNew) {              //СЃРјРµРЅР° РїРѕР·РёС†РёРё
 	if (canWeChangePosition(xNew, yNew)) {
-		var curColor = null; //требуется для мата
+		var curColor = null; //С‚СЂРµР±СѓРµС‚СЃСЏ РґР»СЏ РјР°С‚Р°
 		if(blackOrWhite)
 		{
 			curColor = "white";
@@ -458,35 +453,41 @@ function changePosition(x, y, xNew, yNew) {              //смена позиции
 		}
 		
 		var currItem = currentPosition[y*8 + x];
-		if (currItem["type"] == "pawn") {               //после первого хода, пешка может ходить только на 1 клетку
+		if (currItem["type"] == "pawn") {               //РїРѕСЃР»Рµ РїРµСЂРІРѕРіРѕ С…РѕРґР°, РїРµС€РєР° РјРѕР¶РµС‚ С…РѕРґРёС‚СЊ С‚РѕР»СЊРєРѕ РЅР° 1 РєР»РµС‚РєСѓ
 			currItem["first"] = false;
 		}
 		if (currItem["item"] == "bPawn") { 
 			currItem["item"] == "bQueen"
 		}
-		currentPosition[yNew*8 + xNew] = currItem;       //переставка фигуры в матрице
-		currentPosition[y*8 + x] = {};                   //стиранее ее с прошлой позиции в матрице
-		$(".possible-step").removeClass("possible-step"); //удаление класса возможные ходы со всех клеток, имевших его
-		$(".select").removeClass("select");               //удаление класса выбранных со всех клеток, имевших его
-		isFigureSelected = false;                       //фигура больше не выбрана
-		figureSelected = null;                          //тоже самое
-		blackOrWhite = !blackOrWhite;                    //переход хода к противнику
+		currentPosition[yNew*8 + xNew] = currItem;       //РїРµСЂРµСЃС‚Р°РІРєР° С„РёРіСѓСЂС‹ РІ РјР°С‚СЂРёС†Рµ
+		currentPosition[y*8 + x] = {};                   //СЃС‚РёСЂР°РЅРµРµ РµРµ СЃ РїСЂРѕС€Р»РѕР№ РїРѕР·РёС†РёРё РІ РјР°С‚СЂРёС†Рµ
+		$(".possible-step").removeClass("possible-step"); //СѓРґР°Р»РµРЅРёРµ РєР»Р°СЃСЃР° РІРѕР·РјРѕР¶РЅС‹Рµ С…РѕРґС‹ СЃРѕ РІСЃРµС… РєР»РµС‚РѕРє, РёРјРµРІС€РёС… РµРіРѕ
+		$(".select").removeClass("select");               //СѓРґР°Р»РµРЅРёРµ РєР»Р°СЃСЃР° РІС‹Р±СЂР°РЅРЅС‹С… СЃРѕ РІСЃРµС… РєР»РµС‚РѕРє, РёРјРµРІС€РёС… РµРіРѕ
+		isFigureSelected = false;                       //С„РёРіСѓСЂР° Р±РѕР»СЊС€Рµ РЅРµ РІС‹Р±СЂР°РЅР°
+		figureSelected = null;                          //С‚РѕР¶Рµ СЃР°РјРѕРµ
+		blackOrWhite = !blackOrWhite;                    //РїРµСЂРµС…РѕРґ С…РѕРґР° Рє РїСЂРѕС‚РёРІРЅРёРєСѓ
+		canMove = false //РІСЂРѕРґРµ Р±С‹ СЃСЋРґР°
 		
-		k(x, y).html("");						//стиранее ее с прошлой позиции
-		if (currItem["item"] == "bPawn" && yNew == 7) {   //если черная пешка дошла до конца поля, становиться дамой
+		k(x, y).html("");						//СЃС‚РёСЂР°РЅРµРµ РµРµ СЃ РїСЂРѕС€Р»РѕР№ РїРѕР·РёС†РёРё
+		if (currItem["item"] == "bPawn" && yNew == 7) {   //РµСЃР»Рё С‡РµСЂРЅР°СЏ РїРµС€РєР° РґРѕС€Р»Р° РґРѕ РєРѕРЅС†Р° РїРѕР»СЏ, СЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ РґР°РјРѕР№
 			currItem["item"] = "bQueen";
 			currItem["type"] = "queen";
 		}
-		if (currItem["item"] == "wPawn" && yNew == 0) {   //если белая пешка дошла до конца поля, становиться дамой
+		if (currItem["item"] == "wPawn" && yNew == 0) {   //РµСЃР»Рё Р±РµР»Р°СЏ РїРµС€РєР° РґРѕС€Р»Р° РґРѕ РєРѕРЅС†Р° РїРѕР»СЏ, СЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ РґР°РјРѕР№
 			currItem["item"] = "wQueen";
 			currItem["type"] = "queen";
 		}
-		k(xNew, yNew).html(chessImage[currItem["item"]]);//отрисовка фигуры на шахматной доске
+		k(xNew, yNew).html(chessImage[currItem["item"]]);//РѕС‚СЂРёСЃРѕРІРєР° С„РёРіСѓСЂС‹ РЅР° С€Р°С…РјР°С‚РЅРѕР№ РґРѕСЃРєРµ
+		
+		//socket.emit('step',x ,y, xNew,yNew) //РѕС‚РїСЂР°РІР»СЏРµРј РЅР° СЃРµСЂРІРµСЂ РєРѕРѕСЂРґРёРЅР°С‚С‹, РіРґРµ РЅР°С…РѕРґРёС‚СЃСЏ, РєСѓРґР° РёРґРµС‚
 		
 		if (globColor != curColor && possibleMat)
 		{
-			Shah(globX, globY);
+		//С€Р°С… СѓР¶Рµ Р±С‹Р» РїРѕСЃС‚Р°РІР»РµРЅ, РїСЂРѕРІРµСЂСЏРµРј РЅР° РІРѕР·РјРѕР¶РЅС‹Р№ РјР°С‚
+			Shah(globX, globY);                  
 			possibleMat = false;
+		}else{
+			Shah(xNew,yNew);
 		}
 	} else {
 		alert("Wrong step!");
@@ -494,7 +495,7 @@ function changePosition(x, y, xNew, yNew) {              //смена позиции
 	
 }
 
-function canWeChangePosition(x, y) {                 //проверка на возможность смены позиции
+function canWeChangePosition(x, y) {                 //РїСЂРѕРІРµСЂРєР° РЅР° РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ СЃРјРµРЅС‹ РїРѕР·РёС†РёРё
 	if (k(x, y).hasClass('possible-step'))
 		return true;
 	else
@@ -502,17 +503,17 @@ function canWeChangePosition(x, y) {                 //проверка на возможность с
 }
 
 function showPossibleStep(elem) {
-	var x = parseInt($(elem).attr('data-x')),         //получение координат клетки на доске
+	var x = parseInt($(elem).attr('data-x')),         //РїРѕР»СѓС‡РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚ РєР»РµС‚РєРё РЅР° РґРѕСЃРєРµ
 		y = parseInt($(elem).attr('data-y'));
-	var obj = getItemObject(x, y);                    //получает фигуру с данными координатами
+	var obj = getItemObject(x, y);                    //РїРѕР»СѓС‡Р°РµС‚ С„РёРіСѓСЂСѓ СЃ РґР°РЅРЅС‹РјРё РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё
 	var type = obj["type"];
 	var color = $(elem).children().attr('color');
-
-	var possSteps = stepsObject[type](x, y, color);   //возвращается массив возможных ходов
-
+	
+	var possSteps = stepsObject[type](x, y, color);   //РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ РјР°СЃСЃРёРІ РІРѕР·РјРѕР¶РЅС‹С… С…РѕРґРѕРІ
+	
 	for (var i = 0; i < possSteps.length; i++) {
 		var temp = possSteps[i];
-		k(temp["x"], temp["y"]).addClass('possible-step');//подсвечивание возможных ходов
+		k(temp["x"], temp["y"]).addClass('possible-step');//РїРѕРґСЃРІРµС‡РёРІР°РЅРёРµ РІРѕР·РјРѕР¶РЅС‹С… С…РѕРґРѕРІ
 	}
 }
 
@@ -524,26 +525,83 @@ function getItemObject(x, y) {
 //var previousSelect = [];
 
 $(document).ready(function(){
-	render();//отрисовка доски и шахмат
+	render();//РѕС‚СЂРёСЃРѕРІРєР° РґРѕСЃРєРё Рё С€Р°С…РјР°С‚
+	var isConnectionEstablished = false;
 
+	/*socket.on('connect', function() {
+		socket.on('disconnect', function(){
+			alert('Oponent disconnect. You win.');
+			location.reload();
+		});
+	});*/
+
+	socket.on('start', function(color){
+		isConnectionEstablished = true;
+
+		if (chatEnable) {
+			$(".chatInput").prop('disabled', '');//С‡Р°С‚ СЃС‚Р°РЅРѕРІРёС‚СЊСЃСЏ РґРѕСЃС‚СѓРїРЅС‹Рј
+		}
+
+		if (color == 'white')
+		{
+			canMove = true;  //РЅСѓР¶РЅРѕ, С‡С‚РѕР±С‹ РЅРµ РґР°С‚СЊ РёРіСЂРѕРєСѓ С…РѕРґРёС‚СЊ, РєРѕРіРґР° РЅРµ РµРіРѕ С…РѕРґ
+			console.log('White move!');
+		} else {
+			yourColor = false;
+			canMove = false;
+            console.log('Black move!');
+        }
+        var userColorText = yourColor ? 'Р±РµР»С‹РјРё' : 'С‡С‘СЂРЅС‹РјРё'; //Сѓ Р±РµР»С‹С… yourColor - true
+        $(".user-color").text('РўС‹ РёРіСЂР°РµС€СЊ ' + userColorText); //Сѓ С‡РµСЂРЅС‹С… yourColor - false
+		
+	});
+	
+	socket.on('step', function(x, y, x1, y1){
+		console.log('Received coodrs x: %d, y: %d, x1: %d, y1: %d', x,y,x1,y1);
+		
+		var elem = k(x, y);
+		showPossibleStep(elem);
+		
+		if(canWeChangePosition(x1, y1)){
+			changePosition(x, y, x1, y1);
+		}else{
+			alert('Oponent: Wrong step!');
+		}
+		
+		canMove = true;
+		// blackOrWhite = !blackOrWhite;
+	});
+	
+	socket.on('finish', function(){
+		alert('You lose.');
+		window.close();
+	});
+	
+	socket.on('disconnect', function(){
+		alert('Oponent disconnect. You win.');
+		location.reload();
+	});
+	
 	$('td').on('click', function() {
+		if (!isConnectionEstablished) return; //РїРѕРєР° РЅРµ РїСЂРѕРёР·РѕС€Р»Рѕ РїРѕРґРєР»СЋС‡РµРЅРёРµ, С…РѕРґРёС‚СЊ РЅРµ РїРѕР»СѓС‡РёС‚СЊСЃСЏ
+		if (blackOrWhite != yourColor) return;//РїРѕРєР° РЅРµ С‚РІРѕР№ С†РІРµС‚, С‚РѕР¶Рµ СЃР°РјРѕРµ
 		//console.log($(this).attr('data-x') + ' - ' + $(this).attr('data-y')); //helper
-		blKing = false; //Флаги, есть ли короли на поле черный
-		whKing = false; //                              белый
+		blKing = false; //Р¤Р»Р°РіРё, РµСЃС‚СЊ Р»Рё РєРѕСЂРѕР»Рё РЅР° РїРѕР»Рµ С‡РµСЂРЅС‹Р№
+		whKing = false; //                              Р±РµР»С‹Р№
 		
 		if(blackOrWhite)
 		{
-			var figureColor = $(this).children().attr('color');//цвет фигуры
+			var figureColor = $(this).children().attr('color');//С†РІРµС‚ С„РёРіСѓСЂС‹
 			if (figureColor == "white" || isFigureSelected) {
-				//console.log(figureColor);//проверка
+				//console.log(figureColor);//РїСЂРѕРІРµСЂРєР°
 
-				if (figureColor == $(figureSelected).children().attr('color')) {//если выбирается фигура с таким же цветом, что и выбранная
-					isFigureSelected = false;                                   //происходит сбрасывание выбранной до этого фигуры
+				if (figureColor == $(figureSelected).children().attr('color')) {//РµСЃР»Рё РІС‹Р±РёСЂР°РµС‚СЃСЏ С„РёРіСѓСЂР° СЃ С‚Р°РєРёРј Р¶Рµ С†РІРµС‚РѕРј, С‡С‚Рѕ Рё РІС‹Р±СЂР°РЅРЅР°СЏ
+					isFigureSelected = false;                                   //РїСЂРѕРёСЃС…РѕРґРёС‚ СЃР±СЂР°СЃС‹РІР°РЅРёРµ РІС‹Р±СЂР°РЅРЅРѕР№ РґРѕ СЌС‚РѕРіРѕ С„РёРіСѓСЂС‹
 					$(".possible-step").removeClass("possible-step");
 					$(".select").removeClass("select");
 				}
 
-				if(isFigureSelected) //фигура выбрана, смена позиции
+				if(isFigureSelected) //С„РёРіСѓСЂР° РІС‹Р±СЂР°РЅР°, СЃРјРµРЅР° РїРѕР·РёС†РёРё
 				{
 					var x = parseInt($(figureSelected).attr('data-x'));
 					var	y = parseInt($(figureSelected).attr('data-y'));
@@ -551,18 +609,20 @@ $(document).ready(function(){
 					var xNew = parseInt($(this).attr('data-x'));
 					var	yNew = parseInt($(this).attr('data-y'));
 					changePosition(x, y, xNew, yNew);
-					Shah(xNew, yNew); //проверка на шах
+					socket.emit('step',x ,y, xNew,yNew)
+					//Shah(xNew, yNew); //РїСЂРѕРІРµСЂРєР° РЅР° С€Р°С…
+					canMove = false;
 				} else {
-					//если фигура не выбрана, выбираем и подсвечиваем возможные ходы
-					Selected(this);//выделяем ячейку и фигура выбрана
+					//РµСЃР»Рё С„РёРіСѓСЂР° РЅРµ РІС‹Р±СЂР°РЅР°, РІС‹Р±РёСЂР°РµРј Рё РїРѕРґСЃРІРµС‡РёРІР°РµРј РІРѕР·РјРѕР¶РЅС‹Рµ С…РѕРґС‹
+					Selected(this);//РІС‹РґРµР»СЏРµРј СЏС‡РµР№РєСѓ Рё С„РёРіСѓСЂР° РІС‹Р±СЂР°РЅР°
 					figureSelected = $(this);
 					showPossibleStep(figureSelected);
 				}
 			}
-		} else { //тут тоже самое только для черных
-			var figureColor = $(this).children().attr('color');//цвет фигуры
+		} else { //С‚СѓС‚ С‚РѕР¶Рµ СЃР°РјРѕРµ С‚РѕР»СЊРєРѕ РґР»СЏ С‡РµСЂРЅС‹С…
+			var figureColor = $(this).children().attr('color');//С†РІРµС‚ С„РёРіСѓСЂС‹
 			if (figureColor == "black" || isFigureSelected) {
-				//console.log(figureColor);//проверка
+				//console.log(figureColor);//РїСЂРѕРІРµСЂРєР°
 
 				if (figureColor == $(figureSelected).children().attr('color')) {
 					isFigureSelected = false;
@@ -578,17 +638,19 @@ $(document).ready(function(){
 					var xNew = parseInt($(this).attr('data-x'));
 					var	yNew = parseInt($(this).attr('data-y'));
 					changePosition(x, y, xNew, yNew);
-					Shah(xNew, yNew); //проверка на шах
+					socket.emit('step',x ,y, xNew,yNew)
+					//Shah(xNew, yNew); //РїСЂРѕРІРµСЂРєР° РЅР° С€Р°С…
+					canMove = false;
 				} else {
-					Selected(this);//выделяем ячейку и фигура выбрана
+					Selected(this);//РІС‹РґРµР»СЏРµРј СЏС‡РµР№РєСѓ Рё С„РёРіСѓСЂР° РІС‹Р±СЂР°РЅР°
 					figureSelected = $(this);
 					showPossibleStep(figureSelected);
 				}
 			}
 		}
 		
-		//проверка на конец игры
-		for (var i=0; i < currentPosition.length; i++) //если присутствоет король флаг поднимется
+		//РїСЂРѕРІРµСЂРєР° РЅР° РєРѕРЅРµС† РёРіСЂС‹
+		for (var i=0; i < currentPosition.length; i++) //РµСЃР»Рё РїСЂРёСЃСѓС‚СЃС‚РІРѕРµС‚ РєРѕСЂРѕР»СЊ С„Р»Р°Рі РїРѕРґРЅРёРјРµС‚СЃСЏ
 		{
 			if (currentPosition[i]["item"] == "bKing")
 			{
@@ -602,17 +664,19 @@ $(document).ready(function(){
 		
 		if(blKing == false)
 		{
+			socket.emit('finish'); //РѕС‚РїСЂР°РІР»СЏРµРј РЅР° СЃРµСЂРІРµСЂ РєРѕРЅРµС† РёРіСЂС‹
 			alert("White won! Game end.");
-			ExitReload();
+			//ExitReload();
 		}
 		
 		if(whKing == false)
 		{
+			socket.emit('finish');
 			alert("Black won! Game end");
-			ExitReload();
+			//ExitReload();
 		}
 		
-		function ExitReload()  //функция перезагрузки страницы или ее закрытия послы сыгранной игры
+		/*function ExitReload()  //С„СѓРЅРєС†РёСЏ РїРµСЂРµР·Р°РіСЂСѓР·РєРё СЃС‚СЂР°РЅРёС†С‹ РёР»Рё РµРµ Р·Р°РєСЂС‹С‚РёСЏ РїРѕСЃР»С‹ СЃС‹РіСЂР°РЅРЅРѕР№ РёРіСЂС‹
 		{
 			if (confirm("Do you want to play again?"))
 			{
@@ -620,6 +684,6 @@ $(document).ready(function(){
 			} else {
 				window.close();
 			}
-		}
+		}*/
 	});
 })
